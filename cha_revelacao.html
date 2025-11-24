@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 Contagem Regressiva: Chá Revelação! 🎉</title>
+    
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4e8ff; /* Fundo lilás claro */
+            text-align: center;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px 60px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: min(900px, 92%);
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #ff69b4; /* Cor de rosa choque */
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        /* responsive countdown size */
+        #countdown {
+            font-size: clamp(2.2rem, 6vw, 4em);
+            color: #8a2be2; /* Cor roxa */
+            font-weight: bold;
+            margin: 30px 0;
+        }
+        .label {
+            font-size: clamp(0.9rem, 1.6vw, 1.2em);
+            color: #555;
+        }
+        /* ensure consistent box-sizing */
+        *, *::before, *::after { box-sizing: border-box; }
+        /* Quadrados nos cantos */
+        .corner-badge {
+            position: fixed;
+            top: 20px;
+            width: 140px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            font-size: 1.05em;
+            z-index: 1000;
+            text-transform: uppercase;
+            padding: 8px;
+        }
+        .corner-left { left: 20px; background-color: #28a745; }
+        .corner-right { right: 20px; background-color: #d7b7ff; color: #3a0a3f; }
+
+        /* smaller screens adjustments */
+        @media (max-width: 900px) {
+            .container { padding: 28px 24px; }
+            .corner-badge { width: 110px; height: 70px; font-size: 0.95em; top: 12px; }
+        }
+
+        @media (max-width: 520px) {
+            body { align-items: flex-start; padding-top: 18px; }
+            .container { padding: 18px 16px; border-radius: 14px; width: 96%; }
+            .corner-badge { position: absolute; top: 12px; transform: translateY(0); width: 92px; height: 56px; font-size: 0.85em; }
+            .corner-left { left: 6px; }
+            .corner-right { right: 6px; }
+            /* move badges visually inside safe area on small screens */
+            .corner-left, .corner-right { box-shadow: 0 6px 14px rgba(0,0,0,0.12); }
+        }
+
+        /* Interrogações decorativas espalhadas */
+        .container { position: relative; z-index: 300; }
+        .qa-mark {
+            position: fixed;
+            font-weight: 900;
+            font-size: 80px;
+            opacity: 0.12;
+            pointer-events: none;
+            z-index: 200;
+            user-select: none;
+            transform-origin: center;
+            mix-blend-mode: normal;
+        }
+        .qa1 { left: 10%; top: 18%; color: #2b8cff; transform: rotate(-15deg); }
+        .qa2 { left: 28%; top: 6%; color: #ff5fa1; transform: rotate(10deg); font-size: 56px; }
+        .qa3 { right: 22%; top: 14%; color: #7a2be2; transform: rotate(8deg); }
+        .qa4 { right: 8%; top: 30%; color: #28a745; transform: rotate(-8deg); font-size: 68px; }
+        .qa5 { left: 6%; bottom: 18%; color: #ff9ad6; transform: rotate(6deg); font-size: 72px; }
+        .qa6 { left: 40%; bottom: 8%; color: #6a5acd; transform: rotate(-12deg); font-size: 60px; }
+        .qa7 { right: 36%; bottom: 16%; color: #00b894; transform: rotate(14deg); font-size: 64px; }
+        .qa8 { left: 50%; top: 46%; color: #ff7f50; transform: rotate(-6deg); font-size: 90px; opacity: 0.09; }
+
+        /* Interrogações adicionais preenchendo as laterais esquerda/direita */
+        .qa-left { pointer-events: none; z-index: 190; }
+        .qa-right { pointer-events: none; z-index: 190; }
+        .qaL1 { left: 4%; top: 26%; color: #2b8cff; transform: rotate(-10deg); font-size: 88px; }
+        .qaL2 { left: 8%; top: 44%; color: #ff5fa1; transform: rotate(6deg); font-size: 64px; }
+        .qaL3 { left: 2%; top: 62%; color: #7a2be2; transform: rotate(-6deg); font-size: 74px; }
+        .qaL4 { left: 12%; top: 10%; color: #28a745; transform: rotate(12deg); font-size: 56px; }
+        .qaL5 { left: 10%; bottom: 8%; color: #ff9ad6; transform: rotate(-14deg); font-size: 72px; }
+        .qaL6 { left: 16%; bottom: 28%; color: #6a5acd; transform: rotate(4deg); font-size: 60px; }
+
+        .qaR1 { right: 4%; top: 26%; color: #2b8cff; transform: rotate(10deg); font-size: 88px; }
+        .qaR2 { right: 8%; top: 44%; color: #ff5fa1; transform: rotate(-6deg); font-size: 64px; }
+        .qaR3 { right: 2%; top: 62%; color: #7a2be2; transform: rotate(6deg); font-size: 74px; }
+        .qaR4 { right: 12%; top: 10%; color: #28a745; transform: rotate(-12deg); font-size: 56px; }
+        .qaR5 { right: 10%; bottom: 8%; color: #ff9ad6; transform: rotate(14deg); font-size: 72px; }
+        .qaR6 { right: 16%; bottom: 28%; color: #6a5acd; transform: rotate(-4deg); font-size: 60px; }
+
+        @media (max-width: 900px) {
+            .qa-mark { opacity: 0.10; }
+            .qa1, .qa3, .qa4, .qa5, .qa6, .qa7 { font-size: clamp(36px, 6vw, 74px); }
+            .qa2 { font-size: clamp(28px, 5.5vw, 56px); }
+            .qa8 { font-size: clamp(44px, 8vw, 90px); opacity: 0.07; }
+        }
+
+        @media (max-width: 520px) {
+            /* reduce clutter on very small screens */
+            .qa-mark { font-size: 28px; opacity: 0.09; }
+            .qa8, .qa4, .qa5 { display: none; }
+            .qaL1, .qaL3, .qaR1, .qaR3 { display: none; }
+            .qaL2, .qaL4, .qaL6, .qaR2, .qaR4, .qaR6 { font-size: 34px; }
+            /* nudge side marks closer to edges for mobile */
+            .qa-left { left: 2%; }
+            .qa-right { right: 2%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Contagem Regressiva para o Chá Revelação!</h1>
+        <div class="label">Faltam exatamente:</div>
+        
+        <div id="countdown">Carregando...</div>
+        
+        <div class="label">Até 13 de Dezembro de 2025</div>
+        <img src="gravida.jpeg" alt="Grávida" style="max-width:100%; height:auto; border-radius:12px; margin-top:20px;">
+    </div>
+
+    <div class="corner-badge corner-left" role="img" aria-label="Menino">MENINO</div>
+    <div class="corner-badge corner-right" role="img" aria-label="Menina">MENINA</div>
+
+    <!-- Interrogações decorativas espalhadas pelos espaços em branco -->
+    <div class="qa-mark qa1">?</div>
+    <div class="qa-mark qa2">?</div>
+    <div class="qa-mark qa3">?</div>
+    <div class="qa-mark qa4">?</div>
+    <div class="qa-mark qa5">?</div>
+    <div class="qa-mark qa6">?</div>
+    <div class="qa-mark qa7">?</div>
+    <div class="qa-mark qa8">?</div>
+    <!-- Lateral esquerda: várias interrogações para preencher a área marcada -->
+    <div class="qa-mark qaL1 qa-left">?</div>
+    <div class="qa-mark qaL2 qa-left">?</div>
+    <div class="qa-mark qaL3 qa-left">?</div>
+    <div class="qa-mark qaL4 qa-left">?</div>
+    <div class="qa-mark qaL5 qa-left">?</div>
+    <div class="qa-mark qaL6 qa-left">?</div>
+
+    <!-- Lateral direita: várias interrogações para preencher a área marcada -->
+    <div class="qa-mark qaR1 qa-right">?</div>
+    <div class="qa-mark qaR2 qa-right">?</div>
+    <div class="qa-mark qaR3 qa-right">?</div>
+    <div class="qa-mark qaR4 qa-right">?</div>
+    <div class="qa-mark qaR5 qa-right">?</div>
+    <div class="qa-mark qaR6 qa-right">?</div>
+
+    <script>
+        // Data alvo: 13 de Dezembro de 2025 (Ano, Mês - 1, Dia)
+        // Janeiro é 0, Fevereiro é 1, ... Dezembro é 11
+        const targetDate = new Date(2025, 11, 13);
+
+        function updateCountdown() {
+            // Pega a data e hora atuais
+            const now = new Date();
+            
+            // Calcula a diferença em milissegundos
+            const difference = targetDate - now;
+
+            const countdownElement = document.getElementById('countdown');
+
+            // Se a data já passou
+            if (difference < 0) {
+                countdownElement.innerHTML = "É HOJE ou JÁ PASSOU! 🎉";
+                return;
+            }
+
+            // Converter a diferença de milissegundos para dias
+            // 1 dia = 1000ms * 60s * 60min * 24h
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            
+            // Exibe o resultado na tela
+            countdownElement.innerHTML = days + " dias";
+        }
+
+        // 1. Atualiza a contagem assim que a página carrega
+        updateCountdown();
+        
+        // 2. Atualiza a contagem a cada 24 horas (para ter certeza que o dia mudou)
+        // Isso garante que a contagem seja sempre precisa para o dia atual.
+        setInterval(updateCountdown, 1000 * 60 * 60 * 24); // 24 horas em milissegundos
+    </script>
+
+</body>
+</html>
